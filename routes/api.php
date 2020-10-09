@@ -7,17 +7,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/playgrounds/{playground:uuid}', fn (Playground $playground) => $playground);
 
 Route::post('/playgrounds', function (Request $request) {
-    $request->validate([
+    $payload = $request->validate([
         'html' => 'required|string',
         'css' => 'required|string',
         'config' => 'required|string',
     ]);
 
-    $hash = md5(implode('.', $request->only(['html', 'css', 'config'])));
+    $hash = md5(implode('.', $payload));
 
     return Playground::firstOrCreate(
         ['hash' => $hash],
-        array_merge($request->only(['html', 'css', 'config']), [
+        array_merge($payload, [
             'uuid' => Str::random(10),
         ])
     );
