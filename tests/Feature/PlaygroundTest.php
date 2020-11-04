@@ -28,6 +28,7 @@ class PlaygroundTest extends TestCase
             'html' => 'test html',
             'css' => 'test css',
             'config' => 'test config',
+            'version' => '1',
         ]);
     }
 
@@ -37,6 +38,7 @@ class PlaygroundTest extends TestCase
             'html' => 'test html',
             'css' => 'test css',
             'config' => 'test config',
+            'version' => '1',
         ]);
 
         $response->assertStatus(201);
@@ -45,6 +47,7 @@ class PlaygroundTest extends TestCase
             'html' => 'test html',
             'css' => 'test css',
             'config' => 'test config',
+            'version' => '1',
         ]);
 
         $playground = Playground::find($response['id']);
@@ -55,12 +58,51 @@ class PlaygroundTest extends TestCase
         $this->assertEquals('test config', $playground->config);
     }
 
+    public function test_playground_can_be_created_using_version_2()
+    {
+        $response = $this->postJson('/api/playgrounds', [
+            'html' => 'test html',
+            'css' => 'test css',
+            'config' => 'test config',
+            'version' => '2',
+        ]);
+
+        $response->assertStatus(201);
+
+        $response->assertJson([
+            'html' => 'test html',
+            'css' => 'test css',
+            'config' => 'test config',
+            'version' => '2',
+        ]);
+
+        $playground = Playground::find($response['id']);
+
+        $this->assertEquals(10, Str::length($playground->uuid));
+        $this->assertEquals('test html', $playground->html);
+        $this->assertEquals('test css', $playground->css);
+        $this->assertEquals('test config', $playground->config);
+    }
+
+    public function test_other_versions_are_invalid()
+    {
+        $response = $this->postJson('/api/playgrounds', [
+            'html' => 'test html',
+            'css' => 'test css',
+            'config' => 'test config',
+            'version' => '3',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
     public function test_duplicate_playgrounds_are_reused()
     {
         $response = $this->postJson('/api/playgrounds', [
             'html' => 'test html',
             'css' => 'test css',
             'config' => 'test config',
+            'version' => '1',
         ]);
 
         $response->assertStatus(201);
@@ -70,9 +112,33 @@ class PlaygroundTest extends TestCase
             'html' => 'test html',
             'css' => 'test css',
             'config' => 'test config',
+            'version' => '1',
         ]);
 
         $response->assertStatus(200);
         $this->assertEquals(1, Playground::count());
+    }
+
+    public function test_using_a_different_version_is_not_a_duplicate()
+    {
+        $response = $this->postJson('/api/playgrounds', [
+            'html' => 'test html',
+            'css' => 'test css',
+            'config' => 'test config',
+            'version' => '1',
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertEquals(1, Playground::count());
+
+        $response = $this->postJson('/api/playgrounds', [
+            'html' => 'test html',
+            'css' => 'test css',
+            'config' => 'test config',
+            'version' => '2',
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertEquals(2, Playground::count());
     }
 }

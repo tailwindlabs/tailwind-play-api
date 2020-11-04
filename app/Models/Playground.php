@@ -9,4 +9,11 @@ class Playground extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    public function toArray()
+    {
+        return array_merge(parent::toArray(), [
+            'version' => $this->version === null ? '1' : $this->version
+        ]);
+    }
 }
