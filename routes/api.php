@@ -8,9 +8,9 @@ Route::get('/playgrounds/{playground:uuid}', fn (Playground $playground) => $pla
 
 Route::post('/playgrounds', function (Request $request) {
     $request->validate([
-        'html' => 'required|string',
-        'css' => 'required|string',
-        'config' => 'required|string',
+        'html' => 'required|string|max:500000',
+        'css' => 'required|string|max:500000',
+        'config' => 'required|string|max:500000',
         'version' => 'string|in:1,2',
     ]);
 

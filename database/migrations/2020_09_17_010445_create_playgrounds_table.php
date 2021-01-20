@@ -16,9 +16,9 @@ class CreatePlaygroundsTable extends Migration
         Schema::create('playgrounds', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();
-            $table->text('html');
-            $table->text('css');
-            $table->text('config');
+            $table->mediumText('html');
+            $table->mediumText('css');
+            $table->mediumText('config');
             $table->timestamps();
         });
     }
